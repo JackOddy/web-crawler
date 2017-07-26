@@ -14,15 +14,18 @@ func (self Link) String() string {
 	return fmt.Sprintf("\t[%.50s]\n\t", self.url)
 }
 
-func (self Link) Crawlable() (crawlable bool) {
+func (self Link) Crawlable() bool {
 	if strings.Contains(strings.ToLower(self.url), os.Args[1]) {
-		crawlable = true
+		return true
 	}
-	return
+	return false
 }
 
-func (self Link) Valid() (result bool) {
+func (self Link) Valid() bool {
 	if len(self.url) == 0 {
+		return false
+	}
+	if self.url == "#" {
 		return false
 	}
 	return true

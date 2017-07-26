@@ -6,15 +6,15 @@ import (
 	"os"
 )
 
-var MaxDepth = 5
-var VisitedLinks = make(map[Link]bool)
-
-var Scrapable = map[tags.Atom]bool{
-	tags.A:      true,
-	tags.Img:    true,
-	tags.Script: true,
-	tags.Link:   true,
-}
+var (
+	VisitedLinks = make(map[Link]bool)
+	Scrapable    = map[tags.Atom]bool{
+		tags.A:      true,
+		tags.Img:    true,
+		tags.Script: true,
+		tags.Link:   true,
+	}
+)
 
 type HttpError struct {
 	original string
