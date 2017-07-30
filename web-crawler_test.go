@@ -7,22 +7,51 @@ import (
 )
 
 func TestWebCrawler(t *testing.T) {
+	os.Args = []string{"cmd", "-u=http://localhost:3000"}
+	defer TestServer(t)()
+
 	var testPage Page
 	Reporter = func(p Page) {
 		testPage = p
 	}
 
-	os.Args = []string{"cmd", "-u=http://localhost:3000"}
-	defer TestServer(t)()
+	var presentLinks = []string{
+		"http://localhost:3000/page-1.html",
+		"http://localhost:3000/page-2.html",
+		"http://localhost:3000/profile.html",
+	}
+	var presentAssets = []string{
+		"http://localhost:3000/styles.css",
+	}
+
 	main()
 
-	for _, link := range testPage.links {
-		if _, ok := VisitedLinks.Load(link); !ok {
-			t.Errorf("Could not find %s in VisitedLinks", link.url)
+	defer func() {
+
+		for _, url := range presentLinks {
+			found := false
+			for _, foundLink := range testPage.links {
+				if url == foundLink.url {
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Errorf("Could not find %s in testPage scraped links", url)
+			}
 		}
-		t.Logf("Successfully crawled and stored %s", link.url)
-	}
-	// VisitedLinks.Range(func(key interface{}, value interface{}) bool {
-	// 	link := key.(Link)
-	// })
+
+		for _, url := range presentAssets {
+			found := false
+			for _, foundLink := range testPage.assets {
+				if url == foundLink.url {
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Errorf("Could not find %s in testPage scraped assets", url)
+			}
+		}
+	}()
 }
