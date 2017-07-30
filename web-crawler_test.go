@@ -31,11 +31,11 @@ func TestWebCrawler(t *testing.T) {
 
 	main()
 
-	checkFound(t, definedLinks, testPage.links, "links")
-	checkFound(t, definedAssets, testPage.assets, "assets")
+	shouldFind(t, definedLinks, testPage.links, "links")
+	shouldFind(t, definedAssets, testPage.assets, "assets")
 }
 
-func checkFound(t *testing.T, definedSubjects []string, foundSubjects []Link, subject string) {
+func shouldFind(t *testing.T, definedSubjects []string, foundSubjects []Link, subject string) {
 	for _, url := range definedSubjects {
 		found := false
 		for _, foundLink := range foundSubjects {
