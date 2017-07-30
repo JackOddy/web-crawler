@@ -12,7 +12,6 @@ func Crawl(link Link, links chan Link, pages chan Page, errors chan bool) {
 	}
 
 	go Scrape(link.url, page, links, pages)
-
 }
 
 func fetch(url string) (resp *http.Response, ok bool) {

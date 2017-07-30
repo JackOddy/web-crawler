@@ -17,7 +17,7 @@ func (self Link) String() string {
 	return fmt.Sprintf("\t[%.50s]\n\t", self.url)
 }
 
-func (self Link) shouldCrawl() bool {
+func (self Link) ShouldCrawl() bool {
 	if strings.Contains(strings.ToLower(self.url), *Domain) {
 		if _, visited := VisitedLinks.LoadOrStore(self, true); !visited {
 			return true
