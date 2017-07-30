@@ -1,2 +1,4 @@
 # ignores built version
 web-crawler
+# ignores emacs backup files
+.\#*.go
