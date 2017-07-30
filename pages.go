@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 var Reporter = func(p Page) {
-	fmt.Printf("\n\n[%s] \n\tASSETS:\n\t%v\n\tLINKS:\n\t%v",
+	fmt.Printf("\n\n[%s] \n\tASSETS:  \n\t%v  \n\tLINKS:  \n\t%v",
 		p.url,
 		p.assets,
 		p.links,

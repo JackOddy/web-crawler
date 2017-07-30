@@ -30,6 +30,7 @@ func TestWebCrawler(t *testing.T) {
 	}
 
 	main()
+	Sleep(Second / 50)
 
 	shouldFind(t, expectedLinks, testPage.links, "links")
 	shouldFind(t, expectedAssets, testPage.assets, "assets")
