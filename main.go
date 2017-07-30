@@ -1,13 +1,14 @@
 package main
 
 import (
-	"fmt"
+	"flag"
 	tags "golang.org/x/net/html/atom"
-	"os"
+	"golang.org/x/sync/syncmap"
 )
 
 var (
-	VisitedLinks = make(map[Link]bool)
+	VisitedLinks = syncmap.Map{}
+	Domain       = flag.String("u", "", "Domain")
 	Scrapable    = map[tags.Atom]bool{
 		tags.A:      true,
 		tags.Img:    true,
@@ -16,18 +17,26 @@ var (
 	}
 )
 
-type HttpError struct {
-	original string
-}
-
 func main() {
+	flag.Parse()
+	firstLink := Link{*Domain, true}
 
-	if len(os.Args) < 2 {
-		fmt.Println("missing URL argument")
+	links := make(chan Link)
+	pages := make(chan Page)
+
+	go Crawl(firstLink, links, pages)
+
+	n := 1
+	for n > 0 {
+		select {
+		case link := <-links:
+			if link.shouldCrawl() {
+				go Crawl(link, links, pages)
+				n++
+			}
+		case page := <-pages:
+			go page.Report()
+			n--
+		}
 	}
-
-	go Crawl(os.Args[1])
-
-	var input string
-	fmt.Scanln(&input)
 }

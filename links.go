@@ -2,21 +2,23 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"strings"
 )
 
 type Link struct {
-	url string
+	url    string
+	isLink bool
 }
 
 func (self Link) String() string {
 	return fmt.Sprintf("\t[%.50s]\n\t", self.url)
 }
 
-func (self Link) Crawlable() bool {
-	if strings.Contains(strings.ToLower(self.url), os.Args[1]) {
-		return true
+func (self Link) shouldCrawl() bool {
+	if strings.Contains(strings.ToLower(self.url), *Domain) {
+		if _, visited := VisitedLinks.LoadOrStore(self, true); !visited {
+			return true
+		}
 	}
 	return false
 }

@@ -2,11 +2,9 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"golang.org/x/net/html"
 	tags "golang.org/x/net/html/atom"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -18,53 +16,73 @@ func createLink(tag html.Token) Link {
 			break
 		}
 	}
-	return Link{url}
+
+	if tag.DataAtom == tags.A {
+		return Link{url, true}
+	}
+	return Link{url, false}
 }
 
 func formatUrl(url string) string {
 	var buffer bytes.Buffer
+
 	url = strings.TrimSpace(url)
-	if string(url[0]) == "/" {
-		buffer.WriteString(os.Args[1])
+
+	if url != "" && string(url[0]) == "/" {
+		buffer.WriteString(*Domain)
 		buffer.WriteString(url)
 		return buffer.String()
 	}
+
 	return url
 }
 
-func appendLink(links []Link, token html.Token) []Link {
-	link := createLink(token)
+func verifyTag(token html.Token) (link Link, ok bool) {
+	link = createLink(token)
 	if link.Valid() {
-		links = append(links, link)
+		ok = true
 	}
-	return links
+	return
 }
 
-// reads links
-func ScrapePage(url string, resp *http.Response) []Link {
+func isOpeningOrSelfClosing(t html.Token) bool {
+	switch t.Type {
+	case html.StartTagToken:
+		return true
+	case html.SelfClosingTagToken:
+		return true
+	default:
+	}
+	return false
+}
+
+func Scrape(url string, resp *http.Response, found chan Link, pages chan Page) {
 	var assets, links []Link
+
 	page := html.NewTokenizer(resp.Body)
 
 	for {
 		_ = page.Next()
 		token := page.Token()
+		var link Link
+		var ok bool
 
 		if token.Type == html.ErrorToken {
+			go func() { pages <- Page{url, assets, links} }()
 			break
 		}
 
-		if token.Type == html.StartTagToken && Scrapable[token.DataAtom] {
-			switch token.DataAtom {
-			case tags.A:
-				links = appendLink(links, token)
-			default:
-				assets = appendLink(assets, token)
-			}
+		if isOpeningOrSelfClosing(token) && Scrapable[token.DataAtom] {
+			link, ok = verifyTag(token)
 		}
 
+		if ok {
+			if link.isLink {
+				go func() { found <- link }()
+				links = append(links, link)
+			} else {
+				assets = append(assets, link)
+			}
+		}
 	}
-
-	go fmt.Printf("\n\n[%s] \n\tASSETS:\n\t%v\n\tLINKS:\n\t%v", url, assets, links)
-	fmt.Println("====", len(VisitedLinks), "=====")
-	return links
 }
