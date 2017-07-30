@@ -6,11 +6,11 @@ import (
 	"net/http"
 )
 
-func Crawl(link Link, links chan Link, pages chan Page) {
+func Crawl(link Link, links chan Link, pages chan Page, errors chan bool) {
 	page, err := fetch(link.url)
 
 	if err != nil {
-		fmt.Println("ERROR:", err)
+		errors <- true
 		return
 	}
 

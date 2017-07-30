@@ -23,20 +23,24 @@ func main() {
 
 	links := make(chan Link)
 	pages := make(chan Page)
+	errors := make(chan bool)
 
-	go Crawl(firstLink, links, pages)
+	go Crawl(firstLink, links, pages, errors)
 
 	n := 1
 	for n > 0 {
 		select {
 		case link := <-links:
 			if link.shouldCrawl() {
-				go Crawl(link, links, pages)
+				go Crawl(link, links, pages, errors)
 				n++
 			}
 		case page := <-pages:
 			go page.Report()
 			n--
+		case _ = <-errors:
+			n--
 		}
+
 	}
 }

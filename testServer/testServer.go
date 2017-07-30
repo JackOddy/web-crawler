@@ -6,7 +6,6 @@ import (
 )
 
 func TestServer(t *testing.T) func() {
-	// func main() {
 	server := http.Server{Addr: ":3000"}
 	http.Handle("/", http.FileServer(http.Dir("./testServer/html")))
 
