@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"testing"
+	. "time"
 	. "web-crawler/testServer"
 )
 
@@ -15,43 +16,36 @@ func TestWebCrawler(t *testing.T) {
 		testPage = p
 	}
 
-	var presentLinks = []string{
+	var definedLinks = []string{
 		"http://localhost:3000/page-1.html",
 		"http://localhost:3000/page-2.html",
 		"http://localhost:3000/profile.html",
+		"http://twitter.com/test",
+		"http://linkedin.com/test",
 	}
-	var presentAssets = []string{
+	var definedAssets = []string{
 		"http://localhost:3000/styles.css",
+		"http://localhost:3000/scripts.js",
+		"http://localhost:3000/image.jpg",
 	}
 
 	main()
 
-	defer func() {
+	checkFound(t, definedLinks, testPage.links, "links")
+	checkFound(t, definedAssets, testPage.assets, "assets")
+}
 
-		for _, url := range presentLinks {
-			found := false
-			for _, foundLink := range testPage.links {
-				if url == foundLink.url {
-					found = true
-					break
-				}
-			}
-			if !found {
-				t.Errorf("Could not find %s in testPage scraped links", url)
+func checkFound(t *testing.T, definedSubjects []string, foundSubjects []Link, subject string) {
+	for _, url := range definedSubjects {
+		found := false
+		for _, foundLink := range foundSubjects {
+			if url == foundLink.url {
+				found = true
+				break
 			}
 		}
-
-		for _, url := range presentAssets {
-			found := false
-			for _, foundLink := range testPage.assets {
-				if url == foundLink.url {
-					found = true
-					break
-				}
-			}
-			if !found {
-				t.Errorf("Could not find %s in testPage scraped assets", url)
-			}
+		if !found {
+			t.Errorf("Could not find %s in testPage scraped %s", url, subject)
 		}
-	}()
+	}
 }
