@@ -24,6 +24,12 @@ crawl:
 ```
 Make sure to include the protocol in your url, e.g. `http://`
 
+example:
+```bash
+  # inside the repo
+  $ ./web-crawler -u http://tomblomfield.com
+```
+
 ## Test
 
 Clone the repo and do the following:
