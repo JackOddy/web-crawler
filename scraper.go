@@ -21,7 +21,7 @@ func Scrape(url string, resp *http.Response, found chan Link, pages chan Page) {
 			break
 		}
 
-		if isOpeningOrSelfClosing(token) && Scrapable[token.DataAtom] {
+		if Scrapable[token.DataAtom] && isOpeningOrSelfClosing(token) {
 			link, ok = verifyTag(token)
 		}
 
