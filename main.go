@@ -31,7 +31,7 @@ func main() {
 	for n > 0 {
 		select {
 		case link := <-links:
-			if link.ShouldCrawl() {
+			if link.ShouldCrawl(Domain) {
 				go Crawl(link, links, pages, errors)
 				n++
 			}
