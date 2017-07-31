@@ -16,5 +16,5 @@ type Page struct {
 }
 
 func (self Page) Report() {
-	Reporter(self)
+	go Reporter(self)
 }
