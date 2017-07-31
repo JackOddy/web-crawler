@@ -6,6 +6,11 @@ Crawls a single domain, printing out a list of assets and links for each new pag
 
 Clone the repo into `$GOPATH/src` and do the following:
 
+get deps:
+```bash
+  # inside the repo
+  $ go get 
+```
 build:
 ```bash
   # inside the repo
@@ -22,6 +27,14 @@ Make sure to include the protocol in your url, e.g. `http://`
 ## Test
 
 Clone the repo and do the following:
+
+get deps:
+```bash
+  # inside the repo
+  $ go get 
+```
+
+run the tests
 ```bash
   # inside the repo
   $ go test 
